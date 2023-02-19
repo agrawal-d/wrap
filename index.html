@@ -75,11 +75,11 @@
         // Process a single line
         function processLine(line) {
             wrap = parseInt(length.value);
-            outputLines = [];
+            data = [];
             outputLine = "";
             for (let word of line.split(" ")) {
                 if (outputLine.length + word.length > wrap) {
-                    outputLines.push(outputLine);
+                    data.push(outputLine);
                     outputLine = "";
                 }
                 if (outputLine.length == 0) {
@@ -89,10 +89,10 @@
                 }
             }
             if (outputLine.length > 0) {
-                outputLines.push(outputLine);
+                data.push(outputLine);
             }
 
-            return outputLines.join("\n");
+            return data.join("\n");
 
         }
 
@@ -107,13 +107,11 @@
         function process() {
             inputCol.innerText = getLineCol(input, input.selectionStart);
             outputLines = [];
-            inputLines = input.value.split("\r\n");
+            inputLines = input.value.split("\n");
             for (let line of inputLines) {
                 outputLines.push(processLine(line))
-                console.log(line)
             }
             output.value = outputLines.join("\n");
-
         }
 
         // Events for input
