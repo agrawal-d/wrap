@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="Line wrap text. Break long lines automatically. Useful for formatting plain-text emails.">
+    <title>Line Wrap (live)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Consolas", "Courier New", Courier, monospace;
+        }
+
+        .main {
+            margin: auto;
+            max-width: 1600px;
+            padding: 5px;
+        }
+
+        input {
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 400px;
+            display: block;
+        }
+
+        .col {
+            width: 50%;
+            float: left;
+            padding: 2px;
+        }
+
+        @media screen and (max-width: 600px) {
+            .col {
+                width: 100%;
+                float: none;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <h1>Line wrap (live)</h1>
+        Line width:
+        <input type="number" id="length" placeholder="Line length" value="80" />
+        <br />
+        <div class="col">
+            <h4>Input</h4>
+            <textarea name="input" id="input" placeholder="Input"></textarea>
+            Column: <span id="inputCol">...</span>
+            <br />
+        </div>
+        <div class="col">
+            <h4>Output</h4>
+            <textarea name="output" id="output" placeholder="Output" value=""></textarea>
+            Column: <span id="outputCol">...</span>
+            <br />
+        </div>
+    </div>
+    <script>
+        input = document.getElementById("input");
+        output = document.getElementById("output");
+        length = document.getElementById("length");
+        inputCol = document.getElementById("inputCol");
+        outputCol = document.getElementById("outputCol");
+
+        // Process a single line
+        function processLine(line) {
+            wrap = parseInt(length.value);
+            outputLines = [];
+            outputLine = "";
+            for (let word of line.split(" ")) {
+                if (outputLine.length + word.length > wrap) {
+                    outputLines.push(outputLine);
+                    outputLine = "";
+                }
+                if (outputLine.length == 0) {
+                    outputLine += word;
+                } else {
+                    outputLine += " " + word;
+                }
+            }
+            if (outputLine.length > 0) {
+                outputLines.push(outputLine);
+            }
+
+            return outputLines.join("\n");
+
+        }
+
+        // Get the line and column number of the cursor in the text area
+        function getLineCol(textarea, position) {
+            text = textarea.value;
+            var lines = text.substring(0, position).split("\n");
+            return "Ln " + lines.length + ", Col " + lines[lines.length - 1].length;
+        }
+
+        // Process the input
+        function process() {
+            inputCol.innerText = getLineCol(input, input.selectionStart);
+            outputLines = [];
+            inputLines = input.value.split("\r\n");
+            for (let line of inputLines) {
+                outputLines.push(processLine(line))
+                console.log(line)
+            }
+            output.value = outputLines.join("\n");
+
+        }
+
+        // Events for input
+        input.addEventListener("selectionchange", process);
+        length.addEventListener("selectionchange", process);
+
+        // Events for output
+        output.addEventListener("selectionchange", () => {
+            outputCol.innerText = getLineCol(output, output.selectionStart);
+        });
+
+        // On page load
+        process();
+        outputCol.innerText = getLineCol(output, output.selectionStart);
+    </script>
+</body>
+
+</html>
